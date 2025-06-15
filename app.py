@@ -15,8 +15,7 @@ from helper.scrap import scrape_nutrition_data
 with open('model/model.pkl', 'rb') as f:
     model = pickle.load(f)
 
-fruits_list = ['Jeruk', 'Pisang', 'Bello Pepper', 'Chilli Pepper', 'Grapes', 'Jalepeno', 'Kiwi', 'Lemon', 'Mango', 'Orange',
-            'Paprika', 'Pear', 'Pineapple', 'Pomegranate', 'Watermelon']
+fruits_list = ['Apel', 'Pisang', 'Alpukat', 'Ceri', 'Kiwi', 'Mangga', 'Jeruk', 'Nanas', 'Stroberi', 'Semangka']
 
 def prepare_image(img_path):
     """
@@ -47,9 +46,6 @@ def prepare_image(img_path):
         return None
 
 def run():
-    # Create upload directory if it doesn't exist
-    os.makedirs('./upload_images', exist_ok=True)
-    
     # Set up the UI
     st.title("Fruits🍍 Classification")
     st.write("Upload an image of a fruit or vegetable to classify it")
@@ -57,15 +53,9 @@ def run():
     # Upload image through streamlit interface
     img_file = st.file_uploader("Choose an Image", type=["jpg", "png", "jpeg"])
     
-    if img_file is not None:
-        # Display the uploaded image
+    if img_file is not None:        # Display the uploaded image
         img = Image.open(img_file).resize((250, 250))
-        st.image(img, use_column_width=False, caption="Uploaded Image")
-        
-        # Save the image locally for processing
-        save_image_path = os.path.join('./upload_images', img_file.name)
-        with open(save_image_path, "wb") as f:
-            f.write(img_file.getbuffer())
+        st.image(img, use_container_width=False, caption="Uploaded Image")
         
         # Add a prediction button
         if st.button("Predict"):

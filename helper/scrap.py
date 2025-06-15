@@ -5,10 +5,15 @@ import re
 from urllib.parse import urlparse
 
 # nutrisi
-def scrape_nutrition_data(food_name, details=""):
+def scrape_nutrition_data(food_name):
     food_name = food_name.replace(" ", "-").lower()
+    if food_name == 'ceri':
+        food_name = 'ceri-manis'
     
-    url = "https://www.fatsecret.co.id/kalori-gizi/umum/" + food_name + details
+    if food_name == 'kiwi':
+        food_name = 'buah-kiwi'
+    
+    url = "https://www.fatsecret.co.id/kalori-gizi/umum/" + food_name
     response = requests.get(url)
     soup = BeautifulSoup(response.content, "html.parser")
 
