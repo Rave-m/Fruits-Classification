@@ -2,11 +2,10 @@ import tensorflow as tf
 import numpy as np
 import streamlit as st
 from PIL import Image
-import os
 import pickle
+import io
 
 from helper.functions import (
-    get_image_from_path,
     preprocess_image
 )
 from helper.scrap import scrape_nutrition_data
@@ -17,14 +16,11 @@ with open('model/model.pkl', 'rb') as f:
 
 fruits_list = ['Apel', 'Pisang', 'Alpukat', 'Ceri', 'Kiwi', 'Mangga', 'Jeruk', 'Nanas', 'Stroberi', 'Semangka']
 
-def prepare_image(img_path):
+def prepare_image_from_bytes(image_bytes):
     """
-    Process image and predict fruit/vegetable class
+    Process image directly from bytes and predict fruit/vegetable class
     """
     try:
-        # Get the image bytes from path
-        image_bytes = get_image_from_path(img_path)
-        
         # Preprocess the image for prediction
         image_array = preprocess_image(image_bytes)
         
@@ -35,7 +31,7 @@ def prepare_image(img_path):
         pred_idx = np.argmax(prediction[0])
         
         # Get the confidence score
-        confidence = float(prediction[0][pred_idx])
+        # confidence = float(prediction[0][pred_idx])
         
         # Get the food name
         fruit_name = fruits_list[pred_idx] if pred_idx < len(fruits_list) else "unknown"
@@ -53,7 +49,8 @@ def run():
     # Upload image through streamlit interface
     img_file = st.file_uploader("Choose an Image", type=["jpg", "png", "jpeg"])
     
-    if img_file is not None:        # Display the uploaded image
+    if img_file is not None:
+        # Display the uploaded image
         img = Image.open(img_file).resize((250, 250))
         st.image(img, use_container_width=False, caption="Uploaded Image")
         
@@ -61,7 +58,12 @@ def run():
         if st.button("Predict"):
             # Show a spinner while processing
             with st.spinner("Analyzing image..."):
-                result = prepare_image(save_image_path)
+                # Get image bytes directly from uploaded file
+                img_file.seek(0)  # Reset file pointer to beginning
+                image_bytes = img_file.read()
+                
+                # Process image directly from bytes
+                result = prepare_image_from_bytes(image_bytes)
                 
                 if result:
                     # Display prediction result
